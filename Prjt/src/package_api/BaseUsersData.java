@@ -13,6 +13,7 @@ public class BaseUsersData {
 	public BaseUsersData() {
 		super();
 	}
+	
 	public BaseUsersData(String superUserName, String userName, String pass, int accessRights, UsersRoles role, String createTime, 
 			String changeTime) {
 		super();
