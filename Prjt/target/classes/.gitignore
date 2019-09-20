@@ -1,12 +1,1 @@
-/.classpath
-/.project
 /META-INF/
-/application.properties
-/beans_orm.xml
-/package_api/
-/package_controller/
-/package_entities/
-/package_insideFunctions/
-/package_models/
-/package_search/
-/package_specificationsEnums/
