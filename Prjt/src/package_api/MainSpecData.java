@@ -22,6 +22,7 @@ public class MainSpecData {
 		this.productTitle = productTitle;
 		this.status = status;
 		this.realCostPrice = realCostPrice;
+		
 		this.realWorkingHours = realWorkingHours;
 		this.createDate = createDate;
 		this.changeDate = changeDate;
