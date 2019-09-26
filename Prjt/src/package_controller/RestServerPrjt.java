@@ -38,7 +38,7 @@ public class RestServerPrjt {
 	private static final String CONNECT_USER = "/connect/user/post";
 	private static final String DISCONNECT_USER = "/disconnect/user/post";
 	private static final String CHANGE_ROLE_ACCESS_USER = "/change/role/access/user/post";
-	private static final String KEEP_ALIVE_USER = "/keepalive/user/post";
+	
 	
 	@Autowired
 	CreationModels models;
@@ -93,10 +93,6 @@ public class RestServerPrjt {
 		return models.changeUserAccessOrRole(baseUsersData);	
 	}
 	
-	@RequestMapping(value=KEEP_ALIVE_USER, method=RequestMethod.POST)
-	public AddCode keepAliveUser(@RequestBody BaseUsersData baseUsersData){
-		return models.keepAlive(baseUsersData);	
-	}
 	public static void main(String[] args) {
 		SpringApplication.run(RestServerPrjt.class, args);//for rest requests
 		
