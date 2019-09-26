@@ -17,8 +17,6 @@ import package_api.ProductData;
 import package_entities.BaseUsers;
 import package_entities.MainSpec;
 import package_entities.Product;
-import package_insideFunctions.KeepAlive;
-import package_insideFunctions.KeepAliveBase;
 import package_search.SearchMainSpec;
 import package_search.SearchProduct;
 import package_search.SearchUser;
@@ -67,38 +65,11 @@ public class CreationModels {
 		return null;
 	}
 	
-	private List<KeepAlive> getKeepAliveList(){
-		KeepAliveBase keepAliveBase = KeepAliveBase.getInstance();
-		List<KeepAlive> keepAliveUsers  = new ArrayList<>();
-		if (keepAliveBase.getKeepAliveBase() != null){
-			keepAliveUsers = keepAliveBase.getKeepAliveBase();
-			return keepAliveUsers;
-		}else{
-			return null;
-		}
-	}
-	
-	private int checkConnectUser(List<KeepAlive> usersList, String userName, String pass){
-		for (int cnt = 0; cnt<usersList.size(); cnt++){
-			if ((usersList.get(cnt).getUserName().equals(userName)==true)&&
-				(usersList.get(cnt).getUserPass().equals(pass)==true)){
-				return cnt;
-			}
-		}
-		return -1;
-	}
-	
 	@Transactional	
 	public AddCode addNewProduct(ProductData productData){
 		SearchUser searchUser = new SearchUser(productData.getUserName(),productData.getUserPass());
 		if((findUser(searchUser)==null)){
 			return AddCode.CAN_NOT_EXECUTE;
-		}
-		if (getKeepAliveList() == null){
-			return AddCode.CAN_NOT_EXECUTE;
-		}
-		if (checkConnectUser(getKeepAliveList(), findUser(searchUser).getUserName(), findUser(searchUser).getPass())==(-1)){
-			return AddCode.USER_WAS_DISCONNECTED;
 		}
 		if (findUser(searchUser).getAccessRights(AccessesNumbers.CREATE_PRODUCT.ordinal())==false){
 			return AddCode.USER_HAS_NOT_ACCESS;
@@ -229,12 +200,6 @@ public class CreationModels {
 				if (allBaseUsers.get(cnt).getUserName().equals(baseUserData.getSuperUserName())==false){
 					return AddCode.CAN_NOT_EXECUTE;
 				}
-				if (getKeepAliveList() == null){
-					return AddCode.CAN_NOT_EXECUTE;
-				}
-				if (checkConnectUser(getKeepAliveList(), allBaseUsers.get(cnt).getUserName(), allBaseUsers.get(cnt).getPass())==(-1)){
-					return AddCode.USER_WAS_DISCONNECTED;
-				}
 				break;
 			}
 		}
@@ -267,16 +232,7 @@ public class CreationModels {
 						LocalDate.parse(baseUserData.getCreateTime()), LocalDate.parse(baseUserData.getChangeTime())));
 		return AddCode.OK;
 	}
-	
-	private void creatNewConnectionList(List<KeepAlive> UsersList, String userName, String pass, boolean useUsersList){
-		KeepAliveBase keepAliveBase = KeepAliveBase.getInstance();
-		List<KeepAlive> keepAliveUsers  = new ArrayList<>();
-		if (useUsersList ==true){
-			keepAliveUsers = UsersList;
-		}
-		keepAliveUsers.add(new KeepAlive(userName, pass, true));
-		keepAliveBase.setKeepAliveBase(keepAliveUsers);
-	}
+
 		
 	@Transactional
 	public AddCode connectUser(BaseUsersData baseUserData){
@@ -285,14 +241,6 @@ public class CreationModels {
 		if((findUser(searchUser)==null)){
 			return AddCode.INVALIDE_PARAMETER;
 		}		
-		if (getKeepAliveList() == null){
-			creatNewConnectionList(getKeepAliveList(), findUser(searchUser).getUserName(), findUser(searchUser).getPass(), false);
-		}else{
-			if (checkConnectUser(getKeepAliveList(), findUser(searchUser).getUserName(), findUser(searchUser).getPass())>(-1)){
-				return AddCode.USER_WAS_CONNECTED;
-			}
-			creatNewConnectionList(getKeepAliveList(), findUser(searchUser).getUserName(), findUser(searchUser).getPass(), true);
-		}
 		return AddCode.OK;
 	}
 	
@@ -302,17 +250,6 @@ public class CreationModels {
 		if((findUser(searchUser)==null)){
 			return AddCode.INVALIDE_PARAMETER;
 		}
-		if (getKeepAliveList() == null){
-			return AddCode.CAN_NOT_EXECUTE;
-		}
-		if (checkConnectUser(getKeepAliveList(), findUser(searchUser).getUserName(), findUser(searchUser).getPass())==(-1)){
-			return AddCode.USER_WAS_DISCONNECTED;
-		}
-		KeepAliveBase keepAliveBase = KeepAliveBase.getInstance();
-		List<KeepAlive> keepAliveUsers  = new ArrayList<>();
-		keepAliveUsers = getKeepAliveList();
-		keepAliveUsers.remove(checkConnectUser(getKeepAliveList(), findUser(searchUser).getUserName(), findUser(searchUser).getPass()));
-		keepAliveBase.setKeepAliveBase(keepAliveUsers);
 		return AddCode.OK;
 	}
 	
@@ -324,12 +261,6 @@ public class CreationModels {
 			if (allBaseUsers.get(cnt).getRole().equals(UsersRoles.SUPER_USER)==true){
 				if (allBaseUsers.get(cnt).getUserName().equals(baseUserData.getSuperUserName())==false){
 					return AddCode.CAN_NOT_EXECUTE;
-				}
-				if (getKeepAliveList() == null){
-					return AddCode.CAN_NOT_EXECUTE;
-				}
-				if (checkConnectUser(getKeepAliveList(), allBaseUsers.get(cnt).getUserName(), allBaseUsers.get(cnt).getPass())==(-1)){
-					return AddCode.USER_WAS_DISCONNECTED;
 				}
 				break;
 			}
@@ -353,17 +284,6 @@ public class CreationModels {
 		if((findUser(searchUser)==null)){
 			return AddCode.NO_OBJECT;
 		}
-		if ((getKeepAliveList() == null)||(getKeepAliveList().size() == 0)){
-			return AddCode.CAN_NOT_EXECUTE;
-		}
-		if (checkConnectUser(getKeepAliveList(), findUser(searchUser).getUserName(), findUser(searchUser).getPass())==(-1)){
-			return AddCode.USER_WAS_DISCONNECTED;
-		}
-		KeepAliveBase keepAliveBase = KeepAliveBase.getInstance();
-		List<KeepAlive> keepAliveUsers  = new ArrayList<>();
-		keepAliveUsers = getKeepAliveList();
-		keepAliveUsers.get(checkConnectUser(getKeepAliveList(), findUser(searchUser).getUserName(), findUser(searchUser).getPass())).setKeepAlive(true);
-		keepAliveBase.setKeepAliveBase(keepAliveUsers);
 		return AddCode.OK;
 	}
 }

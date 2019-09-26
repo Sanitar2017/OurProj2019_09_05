@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import package_api.SuperUsersData;
-import package_insideFunctions.KeepAlive;
-import package_insideFunctions.KeepAliveBase;
 import package_api.BaseUsersData;
 import package_api.MainSpecData;
 import package_api.ProductData;
@@ -112,26 +110,6 @@ public class RestServerPrjt {
 		checkConnectionByTime.schedule(new TimerTask() {
             @Override
             public void run() {
-            	List<KeepAlive> keepAliveUsers = new ArrayList<>();
-            	KeepAliveBase keepAliveBase = KeepAliveBase.getInstance();//singleton
-            	if (keepAliveBase != null){
-            		keepAliveUsers = keepAliveBase.getKeepAliveBase();
-            	}
-                System.out.println("Прошлa 1 минута");
-                System.out.println(keepAliveBase.toString());
-                if ((keepAliveUsers == null)||(keepAliveUsers.size() == 0))return;
-                for (int cnt = 0; cnt<keepAliveUsers.size(); cnt++){
-                	if (keepAliveUsers.get(cnt).isKeepAlive() == false){
-                		creationModels.disconnectUser(new BaseUsersData(null, keepAliveUsers.get(cnt).getUserName(),
-                				keepAliveUsers.get(cnt).getUserPass(), 0, null, null, null));
-                		cnt--;
-                		System.out.println(cnt);
-                	}else{
-                		keepAliveUsers.get(cnt).setKeepAlive(false);
-                	}
-                }
-                keepAliveBase.setKeepAliveBase(keepAliveUsers);
-                System.out.println(keepAliveBase.toString());
             }
         }, 60000, 60000);
 	}
